@@ -616,3 +616,48 @@ AS
         FROM Item
         WHERE itemType = 'c'
     )
+
+/*
+ * 4/25/2019
+ * @Sean Boston
+ * moved over insert statements from SQLquery1.sql. Do not run SQLquery1.sql.
+ */
+DECLARE @myid uniqueidentifier = NEWID()
+DECLARE @myid2 uniqueidentifier = NEWID()
+INSERT INTO Item (itemId, itemBarcode, itemDetailId, itemType, itemStatus, itemPurchaseDate)
+VALUES(
+	13,
+	260001346,
+	@myid2,
+	'c',
+	'a',
+	SYSDATETIME()
+),(
+	12,
+	260001342,
+	@myid,
+	'g',
+	'a',
+	SYSDATETIME()
+)
+
+INSERT INTO Genre(genreId, genreName)
+Values(4, 'beat em up')
+
+INSERT INTO HardwareDetail
+VALUES(
+	@myid2,
+	'Xbox One',
+	'Microsoft'
+)
+
+DECLARE @myid3 uniqueidentifier = NEWID()
+INSERT INTO GameDetail(gameDetailId, gameName, gamePublisher, gameGenreId, gameConsole, popularity)
+VALUES(
+	@myid3,
+	'Battletoads',
+	'Xbox Game Studios',
+	4,
+	@myid2,
+	0
+)

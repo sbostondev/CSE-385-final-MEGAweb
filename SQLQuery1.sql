@@ -1,4 +1,10 @@
-﻿USE bostonsa
+﻿/*
+ * WARNING!!!
+ * This SQL file was used for experimenting.
+ * To prepare the database for the project, run '2019-04-14_megadb.sql' instead!
+ */
+
+USE bostonsa
 GO
 
 DECLARE @myid uniqueidentifier = NEWID()
