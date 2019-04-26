@@ -453,13 +453,17 @@ GO
 /*
 * SELECT
 */
+
+
 CREATE PROCEDURE spGetByConsoleManufacturer
 	@manufacturer	VARCHAR(20),
 	@count			INT = 500
 AS
 	SELECT TOP(@count)	gd.gameName,
 						hd.hardwareName,
-						g.genreName
+						g.genreName,
+						gd.gamePublisher,
+						gd.popularity
 	FROM HardwareDetail AS hd
 		JOIN GameDetail AS gd
 			ON hd.HardwareDetailId = gd.gameConsole
@@ -467,6 +471,29 @@ AS
 			ON gd.gameGenreId = g.genreId
 	WHERE hd.hardwareManufacturer = @manufacturer
 	FOR XML PATH('Game'), ROOT('Games')
+GO
+
+/*
+ * 4/25/2019
+ * @Sean Boston
+ * edited spGetByConsoleManufacturer to return more values
+ */
+ALTER PROCEDURE spGetByConsoleManufacturer
+	@manufacturer	VARCHAR(20),
+	@count			INT = 500
+AS
+	SELECT TOP(@count)	gd.gameName,
+						hd.hardwareName,
+						g.genreName,
+						gd.gamePublisher,
+						gd.popularity
+	FROM HardwareDetail AS hd
+		JOIN GameDetail AS gd
+			ON hd.HardwareDetailId = gd.gameConsole
+		JOIN Genre AS g
+			ON gd.gameGenreId = g.genreId
+	WHERE hd.hardwareManufacturer = @manufacturer
+	--FOR XML PATH('Game'), ROOT('Games')
 GO
 
 CREATE PROCEDURE spGetByName
@@ -555,3 +582,37 @@ AS
 	FROM gameDetail
 	WHERE gameName = @title
 GO
+
+/*
+ * 4/25/2019
+ * @Sean Boston
+ * changed spVote so that it returns the new value
+ */
+ALTER PROCEDURE spVote
+ 	@title VARCHAR(20)
+AS
+	UPDATE gameDetail
+	SET popularity = popularity + 1
+	FROM gameDetail
+	WHERE gameName = @title
+
+	SELECT popularity
+	FROM GameDetail
+	WHERE gameName = @title
+	--FOR XML PATH('Game'), ROOT('Games')
+GO
+
+/*
+ * 4/25/2019
+ * @Sean Boston
+ * added missing stored procedure
+ */
+CREATE PROCEDURE spGetAllManufacturers
+AS
+    SELECT DISTINCT hardwareManufacturer
+    FROM HardwareDetail
+    WHERE hardwareDetailId IN (
+        SELECT itemDetailId
+        FROM Item
+        WHERE itemType = 'c'
+    )

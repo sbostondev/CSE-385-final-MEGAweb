@@ -480,6 +480,12 @@ namespace WebAPI {
             sqlExec("spUpdateInvoicePaymentTotal");
         }
 
+        [WebMethod]
+        public void vote(string gameName) {
+            addParam("@title", gameName);
+            send("spVote", serializeStyle.DATA_TABLE);
+        }
+
 		#endregion
 
 	}

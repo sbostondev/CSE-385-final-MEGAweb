@@ -1,15 +1,17 @@
-﻿	SELECT hardwareName
-	FROM HardwareDetail
-	WHERE hardwareDetailId IN (
-		SELECT itemDetailId
-		FROM Item
-		WHERE itemType = 'c'
-	)
-	FOR XML PATH('Console'), ROOT('Consoles')
+﻿USE bostonsa
+GO
 
 DECLARE @myid uniqueidentifier = NEWID()
+DECLARE @myid2 uniqueidentifier = NEWID()
 INSERT INTO Item (itemId, itemBarcode, itemDetailId, itemType, itemStatus, itemPurchaseDate)
 VALUES(
+	13,
+	260001346,
+	@myid2,
+	'c',
+	'a',
+	SYSDATETIME()
+),(
 	12,
 	260001342,
 	@myid,
@@ -18,33 +20,52 @@ VALUES(
 	SYSDATETIME()
 )
 
-
 INSERT INTO Genre(genreId, genreName)
 Values(4, 'beat em up')
 
+INSERT INTO HardwareDetail
+VALUES(
+	@myid2,
+	'Xbox One',
+	'Microsoft'
+)
+
+DECLARE @myid3 uniqueidentifier = NEWID()
 INSERT INTO GameDetail(gameDetailId, gameName, gamePublisher, gameGenreId, gameConsole, popularity)
 VALUES(
-	@myid,
+	@myid3,
 	'Battletoads',
 	'Xbox Game Studios',
 	4,
-	'41AFDEBF-588B-4C28-91A9-370A462C98D6',
+	@myid2,
 	0
 )
 
-select * from GameDetail
+--	SELECT hardwareName
+--	FROM HardwareDetail
+--	WHERE hardwareDetailId IN (
+--		SELECT itemDetailId
+--		FROM Item
+--		WHERE itemType = 'c'
+--	)
+--	FOR XML PATH('Console'), ROOT('Consoles')
 
-SELECT * FROM HardwareDetail
+--select * from GameDetail
 
-EXEC spGetByConsoleManufacturer --@manufacturer = 'Sony'
-GO
+--SELECT * FROM HardwareDetail
 
-CREATE PROCEDURE spGetAllManufacturers
-AS
-	SELECT DISTINCT hardwareManufacturer
-	FROM HardwareDetail
-	WHERE hardwareDetailId IN (
-		SELECT itemDetailId
-		FROM Item
-		WHERE itemType = 'c'
-	)
+--EXEC spGetByConsoleManufacturer --@manufacturer = 'Sony'
+--GO
+
+--EXEC spVote @title = 'Battletoads'
+--GO
+
+--ALTER PROCEDURE spGetAllManufacturers
+--AS
+--	SELECT DISTINCT hardwareManufacturer
+--	FROM HardwareDetail
+--	WHERE hardwareDetailId IN (
+--		SELECT itemDetailId
+--		FROM Item
+--		WHERE itemType = 'c'
+--	)

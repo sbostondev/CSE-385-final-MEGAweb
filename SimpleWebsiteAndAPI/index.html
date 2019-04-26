@@ -21,7 +21,7 @@
         var selectedVendor = 0;
 
         $("#btnLoadGames").click(function () {
-            var d = ""
+            var d = "";
             service("getAllConsoles", "{}",
                 function (response) {
                     $.each(response, function (index, value) {
@@ -40,9 +40,11 @@
                 function (response) {
                     $.each(response, function (index, value) {
                         d += "<tr>" +
-                            "<td>" + value.gameName + "</td>" +
+                            "<td id=\"gameName\">" + value.gameName + "</td>" +
                             "<td>" + value.hardwareName + "</td>" +
                             "<td>" + value.genreName + "</td>" +
+                            "<td>" + value.gamePublisher + "</td>" +
+                            "<td id=\"btn" + value.gameName + "Pop\">" + value.popularity + "<button id=\"btn" + value.gameName + "\" onClick=\"vote(\'" + value.gameName + "\')\">I want to play this.</button></td>" +
                             "</tr>";
                     });
                     $("#gameList").html(d + "</table>");
@@ -50,6 +52,26 @@
                     alert("Error...");
                     console.log(response);
                 });
+        }
+
+        function vote(gameTitle) {
+            console.log(gameTitle);
+            var newPop;
+
+            service("vote", "{gameName:" + "\'" + gameTitle + "\'" + "}",
+                function (response) {
+                    // Popularity should have updated. Now get the new table values.
+                    $.each(response, function (index, value) {
+                        newPop = value.popularity;
+                        console.log(newPop);
+                    });
+                    // Render the change to the table
+                    $("#btn" + gameTitle + "Pop").html( "" + newPop + "<button id=\"btn" + gameTitle + "\" onClick=\"vote(\'" + gameTitle + "\')\">I want to play this.</button>");
+                }, function (response) {
+                    alert("Error...");
+                    console.log(response);
+                }
+            );
         }
     </script>
 </body>
