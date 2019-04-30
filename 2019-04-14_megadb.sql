@@ -620,7 +620,7 @@ AS
 /*
  * 4/25/2019
  * @Sean Boston
- * moved over insert statements from SQLquery1.sql. Do not run SQLquery1.sql.
+ * moved over insert statements from SQLquery1.sql. Do not run SQLquery1.sql. Run all declare and insert statements simultaneously.
  */
 DECLARE @myid uniqueidentifier = NEWID()
 DECLARE @myid2 uniqueidentifier = NEWID()
@@ -661,3 +661,58 @@ VALUES(
 	@myid2,
 	0
 )
+
+/*
+ * 4/30/2019
+ * @Sean Boston
+ * Added another console for testing styles
+ */
+DECLARE @myid4 uniqueidentifier = NEWID()
+INSERT INTO Item (itemId, itemBarcode, itemDetailId, itemType, itemStatus, itemPurchaseDate)
+VALUES(
+	14,
+	260001350,
+	@myid4,
+	'c',
+	'a',
+	SYSDATETIME()
+)
+INSERT INTO HardwareDetail
+VALUES(
+	@myid4,
+	'Playstation 4',
+	'Sony'
+)
+INSERT INTO Genre(genreId, genreName)
+Values(5, 'JRPG')
+
+ALTER TABLE [GameDetail] 
+ALTER COLUMN
+	gameName varchar(50) NOT NULL
+GO
+
+ALTER PROCEDURE spVote
+ 	@title VARCHAR(50)
+AS
+	UPDATE gameDetail
+	SET popularity = popularity + 1
+	FROM gameDetail
+	WHERE gameName = @title
+
+	SELECT popularity
+	FROM GameDetail
+	WHERE gameName = @title
+	--FOR XML PATH('Game'), ROOT('Games')
+GO
+
+DECLARE @myid5 uniqueidentifier = NEWID()
+INSERT INTO GameDetail(gameDetailId, gameName, gamePublisher, gameGenreId, gameConsole, popularity)
+VALUES(
+	@myid5,
+	'Tales of Vesperia: Definitive Edition',
+	'Bandai Namco',
+	5,
+	@myid4,
+	0
+)
+GO

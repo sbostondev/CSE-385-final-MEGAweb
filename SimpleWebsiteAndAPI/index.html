@@ -7,11 +7,12 @@
 </head>
 <body>
 	
-    <div style="margin-left:32px; margin-top:32px;">
-        <button id="btnLoadGames" class="btn btn-primary">Load Games</button>
+    <div style="margin:32px auto 0px auto;text-align: center;">
+        <!--<button id="btnLoadGames" class="btn btn-primary">Load Games</button>-->
+        <div id="loadGames"></div>
         <div>
-            <div id="manufacturerList" style="margin-top:16px;float:left;"></div>
-            <div id="gameList" style="margin-top:16px;margin-left:16px;float:left;"></div>
+            <div id="manufacturerList" style="margin-top:16px;"></div>
+            <div id="gameList" style="margin-top:16px;"></div>
         </div>
     </div>
 
@@ -20,7 +21,8 @@
 
         var selectedVendor = 0;
 
-        $("#btnLoadGames").click(function () {
+        // Load the tab options automatically
+        $("#loadGames").ready(function () {
             var d = "";
             service("getAllConsoles", "{}",
                 function (response) {
@@ -34,17 +36,23 @@
                 });
         });
 
+        // Load the games for the first tab automatically
+        $("#btnMicrosoft").ready(getGames("Microsoft"));
+
         function getGames(manufacturer) {
-            var d = "<table class='table table-striped table-bordered' style='max-width:700px;'>";
+            var d = "<table class='table table-striped table-bordered' style='max-width:700px;margin:auto;'>";
             service("getByConsoleManufacturer", "{m:" + "\'" + manufacturer + "\'" + "}",
                 function (response) {
                     $.each(response, function (index, value) {
+                        cleansedTitle = value.gameName.replace(/ /g, "_").replace(/:/g, "");
+                        console.log(cleansedTitle);
                         d += "<tr>" +
                             "<td id=\"gameName\">" + value.gameName + "</td>" +
                             "<td>" + value.hardwareName + "</td>" +
                             "<td>" + value.genreName + "</td>" +
                             "<td>" + value.gamePublisher + "</td>" +
-                            "<td id=\"btn" + value.gameName + "Pop\">" + value.popularity + "<button id=\"btn" + value.gameName + "\" onClick=\"vote(\'" + value.gameName + "\')\">I want to play this.</button></td>" +
+                            "<td id=\"btn" + cleansedTitle + "Pop\">" + value.popularity + "</td>" +
+                            "<td><button id=\"btn" + cleansedTitle + "\" onClick=\"vote(\'" + value.gameName + "\', \'" + cleansedTitle + "\')\">I want to play this.</button>" + "</td>" +
                             "</tr>";
                     });
                     $("#gameList").html(d + "</table>");
@@ -54,8 +62,7 @@
                 });
         }
 
-        function vote(gameTitle) {
-            console.log(gameTitle);
+        function vote(gameTitle, gameTitleCleansed) {
             var newPop;
 
             service("vote", "{gameName:" + "\'" + gameTitle + "\'" + "}",
@@ -66,7 +73,8 @@
                         console.log(newPop);
                     });
                     // Render the change to the table
-                    $("#btn" + gameTitle + "Pop").html( "" + newPop + "<button id=\"btn" + gameTitle + "\" onClick=\"vote(\'" + gameTitle + "\')\">I want to play this.</button>");
+                    console.log("#btn" + gameTitleCleansed + "Pop");
+                    $("#btn" + gameTitleCleansed + "Pop").html( "" + newPop);
                 }, function (response) {
                     alert("Error...");
                     console.log(response);
