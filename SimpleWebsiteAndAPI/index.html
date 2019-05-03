@@ -27,7 +27,7 @@
             service("getAllConsoles", "{}",
                 function (response) {
                     $.each(response, function (index, value) {
-                        d += "<button id=\"btn" + value.hardwareManufacturer + "\" onClick=\"getGames(\'" + value.hardwareManufacturer + "\')\">" + value.hardwareManufacturer + "</button>";
+                        d += "<button id=\"btn" + value.manufacturer + "\" onClick=\"getGames(\'" + value.manufacturer + "\')\">" + value.manufacturer + "</button>";
                     });
                     $("#manufacturerList").html(d);
                 }, function (response) {
@@ -45,12 +45,11 @@
                 function (response) {
                     $.each(response, function (index, value) {
                         cleansedTitle = value.gameName.replace(/ /g, "_").replace(/:/g, "");
-                        console.log(cleansedTitle);
                         d += "<tr>" +
                             "<td id=\"gameName\">" + value.gameName + "</td>" +
-                            "<td>" + value.hardwareName + "</td>" +
+                            "<td>" + value.consoleName + "</td>" +
                             "<td>" + value.genreName + "</td>" +
-                            "<td>" + value.gamePublisher + "</td>" +
+                            "<td>" + value.publisher + "</td>" +
                             "<td id=\"btn" + cleansedTitle + "Pop\">" + value.popularity + "</td>" +
                             "<td><button id=\"btn" + cleansedTitle + "\" onClick=\"vote(\'" + value.gameName + "\', \'" + cleansedTitle + "\')\">I want to play this.</button>" + "</td>" +
                             "</tr>";
@@ -70,10 +69,8 @@
                     // Popularity should have updated. Now get the new table values.
                     $.each(response, function (index, value) {
                         newPop = value.popularity;
-                        console.log(newPop);
                     });
                     // Render the change to the table
-                    console.log("#btn" + gameTitleCleansed + "Pop");
                     $("#btn" + gameTitleCleansed + "Pop").html( "" + newPop);
                 }, function (response) {
                     alert("Error...");
