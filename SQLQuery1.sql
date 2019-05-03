@@ -7,6 +7,8 @@
 USE bostonsa
 GO
 
+EXEC spGetAllManufacturers
+
 DECLARE @myid uniqueidentifier = NEWID()
 DECLARE @myid2 uniqueidentifier = NEWID()
 INSERT INTO Item (itemId, itemBarcode, itemDetailId, itemType, itemStatus, itemPurchaseDate)

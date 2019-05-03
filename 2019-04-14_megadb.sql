@@ -1,3 +1,6 @@
+DROP DATABASE IF EXISTS bostonsa
+GO
+
 CREATE DATABASE bostonsa
 GO
 USE bostonsa
@@ -574,33 +577,24 @@ AS
 	FOR XML PATH('Rental'), ROOT('Rentals')
 GO
 
-CREATE PROCEDURE spVote
-	@title VARCHAR(20)
-AS
-	UPDATE gameDetail
-	SET popularity = popularity + 1
-	FROM gameDetail
-	WHERE gameName = @title
-GO
-
 /*
  * 4/25/2019
  * @Sean Boston
  * changed spVote so that it returns the new value
  */
-ALTER PROCEDURE spVote
- 	@title VARCHAR(20)
-AS
-	UPDATE gameDetail
-	SET popularity = popularity + 1
-	FROM gameDetail
-	WHERE gameName = @title
-
-	SELECT popularity
-	FROM GameDetail
-	WHERE gameName = @title
-	--FOR XML PATH('Game'), ROOT('Games')
-GO
+--ALTER PROCEDURE spVote
+-- 	@title VARCHAR(20)
+--AS
+--	UPDATE gameDetail
+--	SET popularity = popularity + 1
+--	FROM gameDetail
+--	WHERE gameName = @title
+--
+--	SELECT popularity
+--	FROM GameDetail
+--	WHERE gameName = @title
+--	--FOR XML PATH('Game'), ROOT('Games')
+--GO
 
 /*
  * 4/25/2019
@@ -616,7 +610,7 @@ AS
         FROM Item
         WHERE itemType = 'c'
     )
-
+GO
 /*
  * 4/25/2019
  * @Sean Boston
@@ -689,21 +683,7 @@ Values(5, 'JRPG')
 ALTER TABLE [GameDetail] 
 ALTER COLUMN
 	gameName varchar(50) NOT NULL
-GO
 
-ALTER PROCEDURE spVote
- 	@title VARCHAR(50)
-AS
-	UPDATE gameDetail
-	SET popularity = popularity + 1
-	FROM gameDetail
-	WHERE gameName = @title
-
-	SELECT popularity
-	FROM GameDetail
-	WHERE gameName = @title
-	--FOR XML PATH('Game'), ROOT('Games')
-GO
 
 DECLARE @myid5 uniqueidentifier = NEWID()
 INSERT INTO GameDetail(gameDetailId, gameName, gamePublisher, gameGenreId, gameConsole, popularity)
@@ -716,3 +696,18 @@ VALUES(
 	0
 )
 GO
+
+CREATE PROCEDURE spVote
+ 	@title VARCHAR(50)
+AS
+	UPDATE gameDetail
+	SET popularity = popularity + 1
+	FROM gameDetail
+	WHERE gameName = @title
+
+	SELECT popularity
+	FROM GameDetail
+	WHERE gameName = @title
+	--FOR XML PATH('Game'), ROOT('Games')
+GO
+	
