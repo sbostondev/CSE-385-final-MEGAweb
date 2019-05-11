@@ -44,14 +44,14 @@
             service("getByConsoleManufacturer", "{m:" + "\'" + manufacturer + "\'" + "}",
                 function (response) {
                     $.each(response, function (index, value) {
-                        cleansedTitle = value.gameName.replace(/ /g, "_").replace(/:/g, "");
+                        cleansedTitle = value.gameName.replace(/ /g, "_").replace(/:/g, "").replace(/#/g, "").replace(/'/g, "");
                         d += "<tr>" +
                             "<td id=\"gameName\">" + value.gameName + "</td>" +
                             "<td>" + value.consoleName + "</td>" +
                             "<td>" + value.genreName + "</td>" +
                             "<td>" + value.publisher + "</td>" +
                             "<td id=\"btn" + cleansedTitle + "Pop\">" + value.popularity + "</td>" +
-                            "<td><button id=\"btn" + cleansedTitle + "\" onClick=\"vote(\'" + value.gameName + "\', \'" + cleansedTitle + "\')\">I want to play this.</button>" + "</td>" +
+                            "<td><button id=\"btn" + cleansedTitle + "\" onClick=\"vote(\'" + value.gameName.replace(/'/g, "\\'") + "\', \'" + cleansedTitle + "\')\">I want to play this.</button>" + "</td>" +
                             "</tr>";
                     });
                     $("#gameList").html(d + "</table>");
@@ -64,7 +64,7 @@
         function vote(gameTitle, gameTitleCleansed) {
             var newPop;
 
-            service("vote", "{gameName:" + "\'" + gameTitle + "\'" + "}",
+            service("vote", "{gameName:" + "\'" + gameTitle.replace(/'/g, "\\'") + "\'" + "}", // {gameName: '\'n Verlore Verstand'}
                 function (response) {
                     // Popularity should have updated. Now get the new table values.
                     $.each(response, function (index, value) {
