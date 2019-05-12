@@ -468,9 +468,55 @@ namespace WebAPI {
         }
 
         [WebMethod]
+        public void getAllPlatforms()
+        {
+            send("spGetAllPlatforms", serializeStyle.DATA_TABLE);
+        }
+
+        [WebMethod]
+        public void getAllGenres()
+        {
+            send("spGetAllGenres", serializeStyle.DATA_TABLE);
+        }
+
+        [WebMethod]
+        public void getAllPublishers()
+        {
+            send("spGetAllPublishers", serializeStyle.DATA_TABLE);
+        }
+
+        [WebMethod]
         public void getByConsoleManufacturer(string m) {
             addParam("@manufacturer", m);
             send("spGetByConsoleManufacturer", serializeStyle.DATA_TABLE);
+        }
+
+        [WebMethod]
+        public void getByPlatform(string p)
+        {
+            addParam("@platform", p);
+            send("spGetByPlatform", serializeStyle.DATA_TABLE);
+        }
+
+        [WebMethod]
+        public void getByGenre(string g)
+        {
+            addParam("@genre", g);
+            send("spGetByGenre", serializeStyle.DATA_TABLE);
+        }
+
+        [WebMethod]
+        public void getByPublisher(string p)
+        {
+            addParam("@publisher", p);
+            send("spGetByPublisher", serializeStyle.DATA_TABLE);
+        }
+
+        [WebMethod]
+        public void getByPopularity(string p)
+        {
+            addParam("@popularity", p);
+            send("spGetByPopularity", serializeStyle.DATA_TABLE);
         }
 
         [WebMethod(Description = "Updates an invoice payment total")]

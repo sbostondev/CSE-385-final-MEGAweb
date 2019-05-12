@@ -169,52 +169,124 @@ GO
 --	WHERE gd.gameName= @name
 --GO
 
---CREATE PROCEDURE spGetByGenre
---	@genre			VARCHAR(20),
---	@count			INT = 500
---AS
---	SELECT TOP(@count)	gd.gameName,
---						hd.hardwareName,
---						g.genreName
---	FROM HardwareDetail AS hd
---		JOIN GameDetail AS gd
---			ON hd.HardwareDetailId = gd.gameConsole
---		JOIN Genre AS g
---			ON gd.gameGenreId = g.genreId
---	WHERE g.genreName = @genre
---GO
+CREATE PROCEDURE spGetByGenre
+	@genre			VARCHAR(20),
+	@count			INT = 500
+AS
+	SELECT TOP(@count)	gd.name AS 'gameName',
+						hd.name AS 'consoleName',
+						g.name AS 'genreName',
+						gd.publisher,
+						gd.popularity
+	FROM HardwareDetail AS hd
+		JOIN GameDetail AS gd
+			ON hd.detailId = gd.consoleId
+		JOIN Genres AS g
+			ON gd.genreId = g.genreId
+	WHERE g.name = @genre
+GO
 
---CREATE PROCEDURE spGetByPublisher
---	@publisher		VARCHAR(20),
---	@count			INT = 500
---AS
---	SELECT TOP(@count)	gd.gameName,
---						hd.hardwareName,
---						g.genreName
---	FROM HardwareDetail AS hd
---		JOIN GameDetail AS gd
---			ON hd.HardwareDetailId = gd.gameConsole
---		JOIN Genre AS g
---			ON gd.gameGenreId = g.genreId
---	WHERE gd.gamePublisher = @publisher
---GO
+CREATE PROCEDURE spGetByPlatform
+	@platform			VARCHAR(20),
+	@count			INT = 500
+AS
+	SELECT TOP(@count)	gd.name AS 'gameName',
+						hd.name AS 'consoleName',
+						g.name AS 'genreName',
+						gd.publisher,
+						gd.popularity
+	FROM HardwareDetail AS hd
+		JOIN GameDetail AS gd
+			ON hd.detailId = gd.consoleId
+		JOIN Genres AS g
+			ON gd.genreId = g.genreId
+	WHERE hd.name = @platform
+GO
 
---CREATE PROCEDURE spGetAllGenres
---AS
---	SELECT genreName
---	FROM genre
---GO
+CREATE PROCEDURE spGetByPublisher
+	@publisher		VARCHAR(20),
+	@count			INT = 500
+AS
+	SELECT TOP(@count)	gd.name AS 'gameName',
+						hd.name AS 'consoleName',
+						g.name AS 'genreName',
+						gd.publisher,
+						gd.popularity
+	FROM HardwareDetail AS hd
+		JOIN GameDetail AS gd
+			ON hd.detailId = gd.consoleId
+		JOIN Genres AS g
+			ON gd.genreId = g.genreId
+	WHERE gd.publisher = @publisher
+GO
 
---CREATE PROCEDURE spGetAllConsoles
---AS
---	SELECT hardwareName
---	FROM HardwareDetail
---	WHERE hardwareDetailId IN (
---		SELECT itemDetailId
---		FROM Item
---		WHERE itemType = 'c'
---	)
---GO
+CREATE PROCEDURE spGetByPopularity
+	@popularity		BIT = null,
+	@count			INT = 500
+AS
+	IF (@popularity = 1) BEGIN
+		SELECT TOP(@count)	gd.name AS 'gameName',
+							hd.name AS 'consoleName',
+							g.name AS 'genreName',
+							gd.publisher,
+							gd.popularity
+		FROM HardwareDetail AS hd
+			JOIN GameDetail AS gd
+				ON hd.detailId = gd.consoleId
+			JOIN Genres AS g
+				ON gd.genreId = g.genreId
+		WHERE gd.popularity > 1
+		ORDER BY gd.popularity DESC, gd.name
+	END ELSE IF (@popularity = 0) BEGIN
+		SELECT TOP(@count)	gd.name AS 'gameName',
+							hd.name AS 'consoleName',
+							g.name AS 'genreName',
+							gd.publisher,
+							gd.popularity
+		FROM HardwareDetail AS hd
+			JOIN GameDetail AS gd
+				ON hd.detailId = gd.consoleId
+			JOIN Genres AS g
+				ON gd.genreId = g.genreId
+		WHERE gd.popularity > 1
+		ORDER BY gd.popularity, gd.name
+	END ELSE BEGIN
+	SELECT TOP(0)	gd.name AS 'gameName',
+							hd.name AS 'consoleName',
+							g.name AS 'genreName',
+							gd.publisher,
+							gd.popularity
+		FROM HardwareDetail AS hd
+			JOIN GameDetail AS gd
+				ON hd.detailId = gd.consoleId
+			JOIN Genres AS g
+				ON gd.genreId = g.genreId
+	END
+GO
+
+CREATE PROCEDURE spGetAllGenres
+AS
+	SELECT name
+	FROM Genres
+	ORDER BY name
+GO
+
+CREATE PROCEDURE spGetAllPlatforms
+AS
+	SELECT name
+	FROM HardwareDetail
+	WHERE type = 'c'
+	ORDER BY name
+GO
+
+CREATE PROCEDURE spGetAllPublishers
+AS
+	SELECT DISTINCT publisher
+	FROM GameDetail
+	ORDER BY publisher
+GO
+
+
 
 --CREATE PROCEDURE spGetMemberRentals
 --	@rid INT

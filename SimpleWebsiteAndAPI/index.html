@@ -1,21 +1,47 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8" />
-	<title>My First Website</title>
-	<link rel="import" href="includes/head.html">
+    <meta charset="utf-8" />
+    <title>My First Website</title>
+    
+    <link rel="import" href="includes/head.html">
 </head>
 <body>
-	
+    
     <div style="margin:32px auto 0px auto;text-align: center;">
-        <!--<button id="btnLoadGames" class="btn btn-primary">Load Games</button>-->
+        
         <div id="loadGames"></div>
         <div>
             <div id="manufacturerList" style="margin-top:16px;"></div>
-            <div id="gameList" style="margin-top:16px;"></div>
+            <div id="sortButtons" style="margin-top:16px;">
+                
+            </div>
+            <div style="margin-top:16px;">
+                <table class="table table-striped table-bordered" style="max-width:700px;margin:auto;">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Platform<br><select id='platformList' onchange='getGamesByPlatform(this.value)'></select></th>
+                            <th>Genre<br><select id='genreList' onchange='getGamesByGenre(this.value)'></select></th>
+                            <th>Publisher<br><select id='publisherList' onchange='getGamesByPublisher(this.value)'></select></th>
+                            <th>Popularity<br>
+                                <select id='popularityList' onchange='getGamesByPopularity(this.value)'>
+                                    <option value='null'></option>
+                                    <option value='1'>Most Popular</option>
+                                    <option value='0'>Least Popular</option>
+                                </select>
+                            </th>
+                            <th>Vote!</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gameList">
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
+    <!-- Our javascript -->
     <script>
         //service("", "{}", function (response) { }, function (response) { });
 
@@ -36,11 +62,80 @@
                 });
         });
 
+        // Load the sort options automatically
+        $("#platformList").ready(function () {
+            var d = "<option value='default'></option>";
+            service("getAllPlatforms", "{}",
+                function (response) {
+                    $.each(response, function (index, value) {
+                        d += "<option value=\"" + value.name + "\">" + value.name + "</option>";
+                    });
+                    $("#platformList").html(d);
+                }, function (response) {
+                    alert("Error...");
+                    console.log(response);
+                });
+        });
+
+        $("#genreList").ready(function () {
+            var d = "<option value='default'></option>";
+            service("getAllGenres", "{}",
+                function (response) {
+                    $.each(response, function (index, value) {
+                        d += "<option value=\"" + value.name + "\">" + value.name + "</option>";
+                    });
+                    $("#genreList").html(d);
+                }, function (response) {
+                    alert("Error...");
+                    console.log(response);
+                });
+        });
+
+        $("#publisherList").ready(function () {
+            var d = "<option value='default'></option>";
+            service("getAllPublishers", "{}",
+                function (response) {
+                    $.each(response, function (index, value) {
+                        d += "<option value=\"" + value.publisher + "\">" + value.publisher + "</option>";
+                    });
+                    $("#publisherList").html(d);
+                }, function (response) {
+                    alert("Error...");
+                    console.log(response);
+                });
+        });
+
+        $("#platformList").change(function () {
+            $("#genreList").val("default");
+            $("#publisherList").val("default");
+            $("#popularityList").val("null");
+        });
+
+        $("#genreList").change(function () {
+            $("#platformList").val("default");
+            $("#publisherList").val("default");
+            $("#popularityList").val("null");
+        });
+
+        $("#publisherList").change(function () {
+            $("#platformList").val("default");
+            $("#genreList").val("default");
+            $("#popularityList").val("null");
+        });
+
+        $("#popularityList").change(function () {
+            $("#platformList").val("default");
+            $("#genreList").val("default");
+            $("#publisherList").val("default");
+        });
+
         // Load the games for the first tab automatically
         $("#btnMicrosoft").ready(getGames("Microsoft"));
+                
 
-        function getGames(manufacturer) {
-            var d = "<table class='table table-striped table-bordered' style='max-width:700px;margin:auto;'>";
+    function getGames(manufacturer) {
+        console.log(manufacturer)
+        var d = "";
             service("getByConsoleManufacturer", "{m:" + "\'" + manufacturer + "\'" + "}",
                 function (response) {
                     $.each(response, function (index, value) {
@@ -54,7 +149,96 @@
                             "<td><button id=\"btn" + cleansedTitle + "\" onClick=\"vote(\'" + value.gameName.replace(/'/g, "\\'") + "\', \'" + cleansedTitle + "\')\">I want to play this.</button>" + "</td>" +
                             "</tr>";
                     });
-                    $("#gameList").html(d + "</table>");
+                    $("#gameList").html(d);
+                }, function (response) {
+                    alert("Error...");
+                    console.log(response);
+                });
+        }
+
+        function getGamesByPlatform(platform) {
+            console.log(platform);
+            var d = "";
+            service("getByPlatform", "{p:" + "\'" + platform + "\'" + "}",
+                function (response) {
+                    $.each(response, function (index, value) {
+                        cleansedTitle = value.gameName.replace(/ /g, "_").replace(/:/g, "").replace(/#/g, "").replace(/'/g, "");
+                        d += "<tr>" +
+                            "<td id=\"gameName\">" + value.gameName + "</td>" +
+                            "<td>" + value.consoleName + "</td>" +
+                            "<td>" + value.genreName + "</td>" +
+                            "<td>" + value.publisher + "</td>" +
+                            "<td id=\"btn" + cleansedTitle + "Pop\">" + value.popularity + "</td>" +
+                            "<td><button id=\"btn" + cleansedTitle + "\" onClick=\"vote(\'" + value.gameName.replace(/'/g, "\\'") + "\', \'" + cleansedTitle + "\')\">I want to play this.</button>" + "</td>" +
+                            "</tr>";
+                    });
+                    $("#gameList").html(d);
+                }, function (response) {
+                    alert("Error...");
+                    console.log(response);
+                });
+        }
+
+        function getGamesByGenre(genre) {
+            var d = "";
+            service("getByGenre", "{g:" + "\'" + genre + "\'" + "}",
+                function (response) {
+                    $.each(response, function (index, value) {
+                        cleansedTitle = value.gameName.replace(/ /g, "_").replace(/:/g, "").replace(/#/g, "").replace(/'/g, "");
+                        d += "<tr>" +
+                            "<td id=\"gameName\">" + value.gameName + "</td>" +
+                            "<td>" + value.consoleName + "</td>" +
+                            "<td>" + value.genreName + "</td>" +
+                            "<td>" + value.publisher + "</td>" +
+                            "<td id=\"btn" + cleansedTitle + "Pop\">" + value.popularity + "</td>" +
+                            "<td><button id=\"btn" + cleansedTitle + "\" onClick=\"vote(\'" + value.gameName.replace(/'/g, "\\'") + "\', \'" + cleansedTitle + "\')\">I want to play this.</button>" + "</td>" +
+                            "</tr>";
+                    });
+                    $("#gameList").html(d);
+                }, function (response) {
+                    alert("Error...");
+                    console.log(response);
+                });
+        }
+
+        function getGamesByPublisher(publisher) {
+            var d = "";
+            service("getByPublisher", "{p:" + "\'" + publisher + "\'" + "}",
+                function (response) {
+                    $.each(response, function (index, value) {
+                        cleansedTitle = value.gameName.replace(/ /g, "_").replace(/:/g, "").replace(/#/g, "").replace(/'/g, "");
+                        d += "<tr>" +
+                            "<td id=\"gameName\">" + value.gameName + "</td>" +
+                            "<td>" + value.consoleName + "</td>" +
+                            "<td>" + value.genreName + "</td>" +
+                            "<td>" + value.publisher + "</td>" +
+                            "<td id=\"btn" + cleansedTitle + "Pop\">" + value.popularity + "</td>" +
+                            "<td><button id=\"btn" + cleansedTitle + "\" onClick=\"vote(\'" + value.gameName.replace(/'/g, "\\'") + "\', \'" + cleansedTitle + "\')\">I want to play this.</button>" + "</td>" +
+                            "</tr>";
+                    });
+                    $("#gameList").html(d);
+                }, function (response) {
+                    alert("Error...");
+                    console.log(response);
+                });
+        }
+
+        function getGamesByPopularity(popularity) {
+            var d = "";
+            service("getByPopularity", "{p:" + "\'" + popularity + "\'" + "}",
+                function (response) {
+                    $.each(response, function (index, value) {
+                        cleansedTitle = value.gameName.replace(/ /g, "_").replace(/:/g, "").replace(/#/g, "").replace(/'/g, "");
+                        d += "<tr>" +
+                            "<td id=\"gameName\">" + value.gameName + "</td>" +
+                            "<td>" + value.consoleName + "</td>" +
+                            "<td>" + value.genreName + "</td>" +
+                            "<td>" + value.publisher + "</td>" +
+                            "<td id=\"btn" + cleansedTitle + "Pop\">" + value.popularity + "</td>" +
+                            "<td><button id=\"btn" + cleansedTitle + "\" onClick=\"vote(\'" + value.gameName.replace(/'/g, "\\'") + "\', \'" + cleansedTitle + "\')\">I want to play this.</button>" + "</td>" +
+                            "</tr>";
+                    });
+                    $("#gameList").html(d);
                 }, function (response) {
                     alert("Error...");
                     console.log(response);
@@ -71,7 +255,7 @@
                         newPop = value.popularity;
                     });
                     // Render the change to the table
-                    $("#btn" + gameTitleCleansed + "Pop").html( "" + newPop);
+                    $("#btn" + gameTitleCleansed + "Pop").html("" + newPop);
                 }, function (response) {
                     alert("Error...");
                     console.log(response);
