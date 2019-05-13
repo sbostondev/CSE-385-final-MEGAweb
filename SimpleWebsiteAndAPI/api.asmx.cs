@@ -532,7 +532,15 @@ namespace WebAPI {
             send("spVote", serializeStyle.DATA_TABLE);
         }
 
-		#endregion
+        #endregion
 
+        [WebMethod]
+        public void rent(string gameName, int renterId, int officerId)
+        {
+            addParam("@gameName", gameName);
+            addParam("@renterId", renterId);
+            addParam("@officerId", officerId);
+            send("spCreateRental", serializeStyle.DATA_TABLE);
+        }
 	}
 }

@@ -286,17 +286,24 @@ AS
 	ORDER BY publisher
 GO
 
-
-
---CREATE PROCEDURE spGetMemberRentals
---	@rid INT
---AS
---	SELECT	renterId,
---			officerId,
---			rentedItemId
---	FROM Rental
---	WHERE renterId = @rid
---GO
+CREATE PROCEDURE spCreateRental
+	@gameName	VARCHAR(50),
+	@renterId	INT,
+	@officerId	INT
+AS
+INSERT INTO Rentals (renterId, officerId, gameId, date, dueDate)
+VALUES(@renterId, 
+	@officerId, (
+		SELECT TOP 1 gameId
+		FROM Games AS g
+			JOIN GameDetail AS gd
+				ON g.detailId = gd.detailId
+		WHERE gd.name = @gameName
+	),
+	GETDATE(),
+	DATEADD(day, 7, GETDATE())
+)
+GO
 
 CREATE PROCEDURE spGetAllManufacturers
 AS

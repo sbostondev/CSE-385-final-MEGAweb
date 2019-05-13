@@ -9,12 +9,13 @@
 <body>
     
     <div style="margin:32px auto 0px auto;text-align: center;">
-        
+
+        <div id="rent"></div>
         <div id="loadGames"></div>
         <div>
             <div id="manufacturerList" style="margin-top:16px;"></div>
             <div id="sortButtons" style="margin-top:16px;">
-                
+
             </div>
             <div style="margin-top:16px;">
                 <table class="table table-striped table-bordered" style="max-width:700px;margin:auto;">
@@ -24,7 +25,8 @@
                             <th>Platform<br><select id='platformList' onchange='getGamesByPlatform(this.value)'></select></th>
                             <th>Genre<br><select id='genreList' onchange='getGamesByGenre(this.value)'></select></th>
                             <th>Publisher<br><select id='publisherList' onchange='getGamesByPublisher(this.value)'></select></th>
-                            <th>Popularity<br>
+                            <th>
+                                Popularity<br>
                                 <select id='popularityList' onchange='getGamesByPopularity(this.value)'>
                                     <option value='null'></option>
                                     <option value='1'>Most Popular</option>
@@ -32,10 +34,10 @@
                                 </select>
                             </th>
                             <th>Vote!</th>
+                            <th>Rent</th>
                         </tr>
                     </thead>
-                    <tbody id="gameList">
-                    </tbody>
+                    <tbody id="gameList"></tbody>
                 </table>
             </div>
         </div>
@@ -147,6 +149,7 @@
                             "<td>" + value.publisher + "</td>" +
                             "<td id=\"btn" + cleansedTitle + "Pop\">" + value.popularity + "</td>" +
                             "<td><button id=\"btn" + cleansedTitle + "\" onClick=\"vote(\'" + value.gameName.replace(/'/g, "\\'") + "\', \'" + cleansedTitle + "\')\">I want to play this.</button>" + "</td>" +
+                            "<td><button id=\"btn" + cleansedTitle + "\" onClick=\"rentalForm(\'" + value.gameName.replace(/'/g, "\\'") + "\')\">Rent</button>" + "</td>" +
                             "</tr>";
                     });
                     $("#gameList").html(d);
@@ -170,6 +173,7 @@
                             "<td>" + value.publisher + "</td>" +
                             "<td id=\"btn" + cleansedTitle + "Pop\">" + value.popularity + "</td>" +
                             "<td><button id=\"btn" + cleansedTitle + "\" onClick=\"vote(\'" + value.gameName.replace(/'/g, "\\'") + "\', \'" + cleansedTitle + "\')\">I want to play this.</button>" + "</td>" +
+                            "<td><button id=\"btn" + cleansedTitle + "\" onClick=\"rentalForm(\'" + value.gameName.replace(/'/g, "\\'") + "\')\">Rent</button>" + "</td>" +
                             "</tr>";
                     });
                     $("#gameList").html(d);
@@ -192,6 +196,7 @@
                             "<td>" + value.publisher + "</td>" +
                             "<td id=\"btn" + cleansedTitle + "Pop\">" + value.popularity + "</td>" +
                             "<td><button id=\"btn" + cleansedTitle + "\" onClick=\"vote(\'" + value.gameName.replace(/'/g, "\\'") + "\', \'" + cleansedTitle + "\')\">I want to play this.</button>" + "</td>" +
+                            "<td><button id=\"btn" + cleansedTitle + "\" onClick=\"rentalForm(\'" + value.gameName.replace(/'/g, "\\'") + "\')\">Rent</button>" + "</td>" +
                             "</tr>";
                     });
                     $("#gameList").html(d);
@@ -214,6 +219,7 @@
                             "<td>" + value.publisher + "</td>" +
                             "<td id=\"btn" + cleansedTitle + "Pop\">" + value.popularity + "</td>" +
                             "<td><button id=\"btn" + cleansedTitle + "\" onClick=\"vote(\'" + value.gameName.replace(/'/g, "\\'") + "\', \'" + cleansedTitle + "\')\">I want to play this.</button>" + "</td>" +
+                            "<td><button id=\"btn" + cleansedTitle + "\" onClick=\"rentalForm(\'" + value.gameName.replace(/'/g, "\\'") + "\')\">Rent</button>" + "</td>" +
                             "</tr>";
                     });
                     $("#gameList").html(d);
@@ -236,6 +242,7 @@
                             "<td>" + value.publisher + "</td>" +
                             "<td id=\"btn" + cleansedTitle + "Pop\">" + value.popularity + "</td>" +
                             "<td><button id=\"btn" + cleansedTitle + "\" onClick=\"vote(\'" + value.gameName.replace(/'/g, "\\'") + "\', \'" + cleansedTitle + "\')\">I want to play this.</button>" + "</td>" +
+                            "<td><button id=\"btn" + cleansedTitle + "\" onClick=\"rentalForm(\'" + value.gameName.replace(/'/g, "\\'") + "\')\">Rent</button>" + "</td>" +
                             "</tr>";
                     });
                     $("#gameList").html(d);
@@ -261,7 +268,33 @@
                     console.log(response);
                 }
             );
+    }
+
+        function rentalForm(gameTitle) {
+            //var newPop;
+            $("#rent").html("<form>Renter: <input type=\"text\" id=\"renter\"><br><form>Approving Officer: <input type=\"text\" id=\"officer\"><br></form><button id=\"btnRent\" onClick=\"rent(\'" + gameTitle.replace(/'/g, "\\'") + "\')\">Submit</button>");
+
+
+            
+            //    function (response) {
+            //        // Popularity should have updated. Now get the new table values.
+            //        $.each(response, function (index, value) {
+            //            newPop = value.popularity;
+            //        });
+            //        // Render the change to the table
+            //        $("#btn" + gameTitleCleansed + "Pop").html("" + newPop);
+            //    }, function (response) {
+            //        alert("Error...");
+            //        console.log(response);
+            //    }
+            //);
         }
+    function rent(gameTitle) {
+            service("rent", "{gameName:" + "\'" + gameTitle.replace(/'/g, "\\'") + "\', renterId: \'" + document.getElementById('renter').value + "\', officerId: \'" + document.getElementById('officer').value + "\'} ", function () { }); // {gameName: '\'n Verlore Verstand'}
+        }
+        ////function rent(gameTitle) {
+        //    service("rent", "{gameName:\'3D MiniGolf\', renterId: \'124867\', officerId: \'124867\'} ", function () { }); // {gameName: '\'n Verlore Verstand'}
+        //}   
     </script>
 </body>
 </html>
