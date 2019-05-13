@@ -291,7 +291,16 @@
         }
     function rent(gameTitle) {
         try {
-            service("rent", "{gameName:" + "\'" + gameTitle.replace(/'/g, "\\'") + "\', renterId: \'" + document.getElementById('renter').value + "\', officerId: \'" + document.getElementById('officer').value + "\'} ", function () { });
+            service("rent", "{gameName:" + "\'" + gameTitle.replace(/'/g, "\\'") + "\', renterId: \'" + document.getElementById('renter').value + "\', officerId: \'" + document.getElementById('officer').value + "\'} ",
+                function (response) {
+                    $.each(response, function (index, value) {
+                        alert("Success: " + value.msg);
+                    });
+                    
+                }, function (response) {
+                    alert("Failure: Please enter the banner ID of a valid member.");
+                }
+            );
         }
         catch {
             window.alert("Error creating rental.");
