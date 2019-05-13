@@ -291,18 +291,24 @@ CREATE PROCEDURE spCreateRental
 	@renterId	INT,
 	@officerId	INT
 AS
-INSERT INTO Rentals (renterId, officerId, gameId, date, dueDate)
-VALUES(@renterId, 
-	@officerId, (
-		SELECT TOP 1 gameId
-		FROM Games AS g
-			JOIN GameDetail AS gd
-				ON g.detailId = gd.detailId
-		WHERE gd.name = @gameName
-	),
-	GETDATE(),
-	DATEADD(day, 7, GETDATE())
-)
+BEGIN TRY
+	INSERT INTO Rentals (renterId, officerId, gameId, date, dueDate)
+	VALUES(@renterId, 
+		@officerId, (
+			SELECT TOP 1 gameId
+			FROM Games AS g
+				JOIN GameDetail AS gd
+					ON g.detailId = gd.detailId
+			WHERE gd.name = @gameName
+		),
+		GETDATE(),
+		DATEADD(day, 7, GETDATE())
+	)
+	SELECT 'Rental created successfully' AS msg
+END TRY
+BEGIN CATCH
+	SELECT ERROR_MESSAGE() AS msg
+END CATCH
 GO
 
 CREATE PROCEDURE spGetAllManufacturers
@@ -323,6 +329,73 @@ AS
 	SELECT popularity
 	FROM GameDetail
 	WHERE name = @title
+GO
+
+CREATE PROCEDURE spReturn
+	@id INT
+AS
+	UPDATE Rentals
+	SET returned = 1
+	FROM Rentals
+	WHERE rentalId = @id
+GO
+
+CREATE PROCEDURE spGetRentals
+	@mode INT
+AS
+	IF @mode = 0 
+		SELECT	r.rentalId,
+				m1.uniqueId AS renter,
+				m2.uniqueId AS officer,
+				gd.name,
+				CAST(r.date AS CHAR(10)) AS date,
+				CAST(r.dueDate AS CHAR(10)) AS dueDate,
+				r.returned
+		FROM Rentals AS r
+			JOIN Members AS m1
+				ON r.renterId = m1.bannerId
+			JOIN Members AS m2
+				ON r.officerId = m2.bannerId
+			JOIN Games AS g
+				ON r.gameId = g.gameId
+			JOIN GameDetail AS gd
+				ON g.detailId = gd.detailId
+	ELSE IF @mode = 1
+		SELECT	r.rentalId,
+				m1.uniqueId AS renter,
+				m2.uniqueId AS officer,
+				gd.name,
+				CAST(r.date AS CHAR(10)) AS date,
+				CAST(r.dueDate AS CHAR(10)) AS dueDate,
+				r.returned
+		FROM Rentals AS r
+			JOIN Members AS m1
+				ON r.renterId = m1.bannerId
+			JOIN Members AS m2
+				ON r.officerId = m2.bannerId
+			JOIN Games AS g
+				ON r.gameId = g.gameId
+			JOIN GameDetail AS gd
+				ON g.detailId = gd.detailId
+		WHERE r.returned = 0
+	ELSE
+		SELECT	r.rentalId,
+				m1.uniqueId AS renter,
+				m2.uniqueId AS officer,
+				gd.name,
+				CAST(r.date AS CHAR(10)) AS date,
+				CAST(r.dueDate AS CHAR(10)) AS dueDate,
+				r.returned
+		FROM Rentals AS r
+			JOIN Members AS m1
+				ON r.renterId = m1.bannerId
+			JOIN Members AS m2
+				ON r.officerId = m2.bannerId
+			JOIN Games AS g
+				ON r.gameId = g.gameId
+			JOIN GameDetail AS gd
+				ON g.detailId = gd.detailId
+		WHERE r.dueDate < GETDATE() AND r.returned = 0
 GO
 
 SET IDENTITY_INSERT Games OFF
@@ -5897,4 +5970,13 @@ VALUES (834326,'Suzi','Creswell','creswess'),
 (728127,'Sharline','Bottrell','bottresz'),
 (424431,'Kendre','Ivanov','ivanovkj'),
 (330256,'Karrie','Glassborow','glassbki')
+GO
+
+INSERT INTO Rentals
+VALUES(212720, 212720, 13, DATEADD(day, -2, GETDATE()), DATEADD(day, 5, GETDATE()),0),
+(355259, 212720, 25, DATEADD(day, 0, GETDATE()), DATEADD(day, 7, GETDATE()),0),
+(459716, 212720, 666, DATEADD(day, -5, GETDATE()), DATEADD(day, 2, GETDATE()),1),
+(728127, 834326, 1, DATEADD(day, -8, GETDATE()), DATEADD(day, -1, GETDATE()),0),
+(330256, 834326, 1010, DATEADD(day, -12, GETDATE()), DATEADD(day, -5, GETDATE()),0),
+(845092, 834326, 101, DATEADD(day, -1, GETDATE()), DATEADD(day, 6, GETDATE()),0)
 GO

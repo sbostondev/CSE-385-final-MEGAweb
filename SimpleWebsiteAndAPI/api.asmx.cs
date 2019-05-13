@@ -542,5 +542,18 @@ namespace WebAPI {
             addParam("@officerId", officerId);
             send("spCreateRental", serializeStyle.DATA_TABLE);
         }
+
+        [WebMethod]
+        public void getRentals(int mode)
+        {
+            addParam("@mode", mode);
+            send("spGetRentals", serializeStyle.DATA_TABLE);
+        }
+        [WebMethod]
+        public void returnRental(int rentalId)
+        {
+            addParam("@id", rentalId);
+            send("spReturn", serializeStyle.DATA_TABLE);
+        }
 	}
 }

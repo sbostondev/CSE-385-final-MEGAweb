@@ -2,12 +2,12 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>My First Website</title>
+    <title>MEGA Games Catalog</title>
     
     <link rel="import" href="includes/head.html">
 </head>
 <body>
-    
+    <center><a href="rentals.html">View rentals</a></center>
     <div style="margin:32px auto 0px auto;text-align: center;">
 
         <div id="rent"></div>
@@ -290,11 +290,13 @@
             //);
         }
     function rent(gameTitle) {
-            service("rent", "{gameName:" + "\'" + gameTitle.replace(/'/g, "\\'") + "\', renterId: \'" + document.getElementById('renter').value + "\', officerId: \'" + document.getElementById('officer').value + "\'} ", function () { }); // {gameName: '\'n Verlore Verstand'}
+        try {
+            service("rent", "{gameName:" + "\'" + gameTitle.replace(/'/g, "\\'") + "\', renterId: \'" + document.getElementById('renter').value + "\', officerId: \'" + document.getElementById('officer').value + "\'} ", function () { });
         }
-        ////function rent(gameTitle) {
-        //    service("rent", "{gameName:\'3D MiniGolf\', renterId: \'124867\', officerId: \'124867\'} ", function () { }); // {gameName: '\'n Verlore Verstand'}
-        //}   
+        catch {
+            window.alert("Error creating rental.");
+        }
+    }
     </script>
 </body>
 </html>
